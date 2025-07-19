@@ -1,9 +1,9 @@
 About TurboFEC-ARM
 ==================
 
-TurboFEC-ARM is an adaptation of the [TurboFEC library](https://github.com/ttsou/turbofec), originally designed for x86 architectures, now ported to support ARM-based systems such as Raspberry Pi 5 and similar ARM devices. This library includes implementations of LTE forward error correction encoders and decoders, covering convolutional codes, turbo codes, and the associated rate matching units that manage block interleaving, bit selection, and pruning.
+This project is a fork of [udevlog/turbofec-arm](https://github.com/udevlog/turbofec-arm), which is itself a port of the original [TurboFEC library](https://github.com/ttsou/turbofec) to support ARM NEON SIMD instructions. This version modernizes the build system by replacing Autotools with CMake, providing a more streamlined and maintainable development experience.
 
-The ARM version leverages NEON instructions for optimized performance on ARM hardware.
+The library provides implementations of 3GPP LTE forward error correction encoders and decoders, covering convolutional codes, turbo codes, and the associated rate matching units that manage block interleaving, bit selection, and pruning. The ARM version leverages NEON instructions for optimized performance on ARM hardware.
 
 LTE specification and sections:
 
@@ -29,7 +29,7 @@ Building with CMake
 2. **Clone the repository**:
    Get the source code:
    ```sh
-   $ git clone https://github.com/amcolex/turbofec-arm.git
+   $ git clone https://github.com/udevlog/turbofec-arm.git
    $ cd turbofec-arm
    ```
 
@@ -100,6 +100,8 @@ $ ./tests/turbo_test -b -j 4 -i 1 -p 10000
 
 Credits
 =======
-All credit for the original x86-based TurboFEC code goes to the original repository at: [TurboFEC](https://github.com/ttsou/turbofec).
+This repository is a fork of [udevlog/turbofec-arm](https://github.com/udevlog/turbofec-arm), which was adapted for ARM SIMD. The original x86-based TurboFEC code can be found at [https://github.com/ttsou/turbofec](https://github.com/ttsou/turbofec).
 
-Additionally, this ARM NEON adaptation utilizes the 'sse2neon' library to convert SSE intrinsics to their NEON counterparts. 'sse2neon' is a critical component in enabling the TurboFEC code to run on ARM architectures. More details and the source code can be found at [sse2neon](https://github.com/DLTcollab/sse2neon).
+This fork replaces the original Autotools build system with CMake for a more modern and maintainable setup.
+
+The ARM NEON adaptation utilizes the 'sse2neon' library to convert SSE intrinsics to their NEON counterparts. 'sse2neon' is a critical component in enabling the TurboFEC code to run on ARM architectures. More details and the source code can be found at [sse2neon](https://github.com/DLTcollab/sse2neon).
