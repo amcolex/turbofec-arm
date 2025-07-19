@@ -17,86 +17,47 @@ LTE specification and sections:
 
 5.1.3.2 *"Rate matching for convolutionally coded transport channels and control information"*
 
-Compile on ARM or Docker Container
-==================================
-**- To build on a Raspberry Pi or similar ARM device:**
-1. **Update and Upgrade the System**:
-   Before you start, ensure your system is up-to-date. This helps in reducing compatibility issues with packages.
+Building with CMake
+===================
+1. **Install Required Packages**:
+   To build the project, you will need `git`, `cmake`, and a C compiler like `gcc`.
    ```sh
    $ sudo apt update
-   $ sudo apt upgrade -y
+   $ sudo apt install -y git cmake build-essential
    ```
 
-2. **Install Required Packages**:
-   To use `autoreconf` and `./configure`, you will need the Autoconf, Automake, and Libtool packages, along with the GCC compiler and Make utility.
-   ```sh
-   $ sudo apt install -y autoconf automake libtool build-essential
-   ```
-
-3. **Clone the repository**:
+2. **Clone the repository**:
    Get the source code:
    ```sh
-   $ git clone git@github.com:udevlog/turbofec-arm.git
+   $ git clone https://github.com/amcolex/turbofec-arm.git
    $ cd turbofec-arm
    ```
 
-4. **Run the Build Commands**:
-   Now you can run the build commands as specified:
+3. **Run the Build Commands**:
+   Now you can run the build commands using CMake:
    ```sh
-   $ autoreconf -i
-   $ ./configure
+   $ mkdir build
+   $ cd build
+   $ cmake -DCMAKE_BUILD_TYPE=Release ..
    $ make
+   ```
+   To install the library system-wide (optional):
+   ```
    $ sudo make install
    ```
 
-**- To build in a Docker container:**
-
-Ensure you have Docker installed on your system. For detailed instructions on installing Docker, please refer to the 'Docker Installation' section at the bottom of this document.
-
-1. **Pull the Docker image**:
-   This image includes the necessary ARM emulation environment using QEMU.
+Testing
+=======
+1. **Run all automated tests**:
+   This will execute all configured tests and output results. From the `build` directory run:
    ```sh
-   $ docker pull udevlog/turbofec-arm
+   $ ctest
    ```
 
-2. **Start the Docker container**:
-   Launch the Docker container with QEMU for ARM emulation.
-   ```sh
-   $ docker run -it --rm udevlog/turbofec-arm
-   ```
-
-3. **Inside the Docker container**:
-   Execute the following commands to build the project.
-   ```sh
-   $ autoreconf -i
-   $ ./configure --host=aarch64-linux-gnu
-   $ make
-   $ make install
-   ```
-
-   This setup will compile and install the TurboFEC library and its dependencies within the container. Note that any changes inside the container will be lost unless you commit them to a new Docker image.
-
-
-Testing on Raspberry Pi
-=======================
-Performance on Raspberry Pi is indicative of actual deployment conditions and typically showcases much higher processing rates compared to the emulated environment.
-
-
-1. **Build test tools**:
-   ```sh
-   make -C ./tests turbo_test conv_test
-   ```
-
-2. **Run all automated tests**:
-   This will execute all configured tests and output results.
-   ```sh
-   make check
-   ```
-
-3. **Benchmark specific code**:
-   Here is how to perform a benchmark test on the 3GPP LTE turbo encoder and decoder:
+2. **Benchmark specific code**:
+   Here is how to perform a benchmark test on the 3GPP LTE turbo encoder and decoder. From the `build` directory run:
     ```sh
-    $ tests/.libs/turbo_test -b -j 4 -i 1 -p 10000
+    $ ./tests/turbo_test -b -j 4 -i 1 -p 10000
 
     =================================================
     [+] Testing: 3GPP LTE turbo
@@ -111,60 +72,19 @@ Performance on Raspberry Pi is indicative of actual deployment conditions and ty
 
    This example demonstrates the potential performance capabilities of TurboFEC-ARM when running on native ARM hardware without the limitations of emulation.
 
-4. **Run specific tests**:
-   Individual tests and benchmarks can also be run to evaluate specific functionalities or performance aspects:
-   ```sh
-   tests/.libs/conv_test -h # Displays help for convolutional tests
-   tests/.libs/turbo_test -h  # Displays help for turbo tests
-   ```
-
-
-Testing in Docker (Using QEMU for ARM Emulation)
-================================================
-Note: Performance metrics observed within the Docker container are expected to be lower due to the overhead of QEMU emulation, which does not have access to the full resources of the host machine.
-
-1. **Build test tools**:
-   ```sh
-   make -C ./tests turbo_test conv_test
-   ```
-
-2. **List available codes and their specifications**:
-   ```sh
-   qemu-aarch64-static tests/.libs/conv_test -l
-   ```
-
 3. **Run specific tests**:
-   For example, to test the WiMax FCH code:
-   ```sh
-   qemu-aarch64-static tests/.libs/conv_test -c 19
-   ```
-
-4. **Benchmarking**:
-   Testing the performance of the 3GPP LTE turbo encoder and decoder:
-   ```sh
-   qemu-aarch64-static tests/.libs/turbo_test -b -j 8 -i 2 -p 1000
-   ```
-
-   This command tests the performance of the decoder using 8 threads, with each thread performing 2 iterations over 1000 packets, reflecting how QEMU can significantly reduce performance due to emulation.
-
-5. **Run specific tests**:
    Individual tests and benchmarks can also be run to evaluate specific functionalities or performance aspects:
    ```sh
-   qemu-aarch64-static tests/.libs/conv_test -h # Displays help for convolutional tests
-   qemu-aarch64-static tests/.libs/turbo_test -h  # Displays help for turbo tests
+   $ ./tests/conv_test -h # Displays help for convolutional tests
+   $ ./tests/turbo_test -h  # Displays help for turbo tests
    ```
-
-
-Docker Installation
-===================
-**Docker**: Install Docker for [Windows 10](https://docs.docker.com/docker-for-windows/install/) or [Ubuntu](https://docs.docker.com/engine/install/ubuntu/) to run the ARM emulation environment.
 
 Benchmark
 =========
-You can perform various convolutional and turbo decoding tests to assess performance on your ARM device or within the Docker emulation:
+You can perform various convolutional and turbo decoding tests to assess performance on your ARM device. From the `build` directory run:
 
 ```sh
-$ tests/.libs/turbo_test -b -j 4 -i 1 -p 10000
+$ ./tests/turbo_test -b -j 4 -i 1 -p 10000
 
 =================================================
 [+] Testing: 3GPP LTE turbo
